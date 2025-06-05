@@ -1,0 +1,31 @@
+const mongoose = require("mongoose");
+const fs = require("fs");
+const path = require("path");
+
+mongoose
+  .connect("mongodb://127.0.0.1:27017/slimmom")
+  .then(() => console.log("✅ Connected to MongoDB"))
+  .catch((err) => console.error("❌ DB error:", err));
+
+const Food = require("./models/Food");
+
+const filePath = path.join(__dirname, "products.json");
+const data = JSON.parse(fs.readFileSync(filePath, "utf-8"));
+
+const cleanedData = data
+  .map(({ _id, __v, ...rest }) => rest)
+  .filter((item) => item.calories !== undefined && item.title);
+
+async function importData() {
+  try {
+    await Food.deleteMany();
+    await Food.insertMany(cleanedData);
+    console.log("✅ Produsele au fost importate cu succes!");
+  } catch (err) {
+    console.error("❌ Eroare la import:", err);
+  } finally {
+    mongoose.connection.close();
+  }
+}
+
+importData();
