@@ -13,7 +13,10 @@ const LoginPage = () => {
 
     if (!email.trim()) return;
 
-    dispatch(login(email));
+    const fakeUserId = "user-" + btoa(email); // un ID unic de test local
+    localStorage.setItem("userId", fakeUserId); // 🔹 Salvăm ID-ul local
+
+    dispatch(login(email)); // salvezi email-ul în redux
     navigate("/diary");
   };
 

@@ -1,5 +1,5 @@
 const DiaryProductsList = ({ items, onDelete }) => {
-  if (items.length === 0) {
+  if (!items || items.length === 0) {
     return <p className="text-center text-gray-500">No products added yet.</p>;
   }
 
@@ -9,9 +9,9 @@ const DiaryProductsList = ({ items, onDelete }) => {
         Today's Products
       </h3>
       <ul className="space-y-2">
-        {items.map((item, index) => (
+        {items.map((item) => (
           <li
-            key={index}
+            key={item._id}
             className="flex justify-between items-center border-b pb-1"
           >
             <div>
@@ -21,7 +21,7 @@ const DiaryProductsList = ({ items, onDelete }) => {
               </span>
             </div>
             <button
-              onClick={() => onDelete(index)}
+              onClick={() => onDelete(item._id)}
               className="text-red-500 hover:text-red-700 font-bold"
             >
               ❌

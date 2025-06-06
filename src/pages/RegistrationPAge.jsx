@@ -13,7 +13,11 @@ const RegistrationPage = () => {
 
     if (!email.trim()) return;
 
-    dispatch(login(email));
+    // 🔐 generează un userId fals bazat pe email
+    const fakeUserId = "user-" + btoa(email);
+    localStorage.setItem("userId", fakeUserId);
+
+    dispatch(login(email)); // salvăm și în Redux
     navigate("/diary");
   };
 

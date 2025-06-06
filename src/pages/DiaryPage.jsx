@@ -1,28 +1,46 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { format } from "date-fns";
 import DiaryDateCalendar from "../components/DiaryDateCalendar/DiaryDateCalendar";
 import DiaryAddProductForm from "../components/DiaryAddProductForm/DiaryAddProductForm";
 import DiaryProductsList from "../components/DiaryProductsList/DiaryProductsList";
 import RightSidebar from "../components/RightSidebar/RightSidebar";
+import { getDiaryProductsByDate } from "../api/productsApi";
+import { deleteDiaryProduct } from "../api/productsApi";
 
 const DiaryPage = () => {
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [products, setProducts] = useState([]);
 
   const formattedDate = format(selectedDate, "yyyy-MM-dd");
+  const userId = localStorage.getItem("userId");
 
-  const filteredProducts = products.filter((p) => p.date === formattedDate);
+  const fetchProducts = async () => {
+    const userId = localStorage.getItem("userId");
+    if (!userId) return;
 
-  const handleAddProduct = (product) => {
-    const productWithDate = {
-      ...product,
-      date: formattedDate,
-    };
-    setProducts((prev) => [...prev, productWithDate]);
+    try {
+      const data = await getDiaryProductsByDate(formattedDate, userId);
+      setProducts(data);
+    } catch (err) {
+      console.error("Eroare la fetch:", err);
+    }
   };
 
-  const handleDeleteProduct = (indexToDelete) => {
-    setProducts((prev) => prev.filter((_, index) => index !== indexToDelete));
+  useEffect(() => {
+    fetchProducts();
+  }, [formattedDate]);
+
+  const handleAddProduct = async () => {
+    await fetchProducts();
+  };
+
+  const handleDeleteProduct = async (idToDelete) => {
+    try {
+      await deleteDiaryProduct(idToDelete);
+      fetchProducts(); // reîncarcă lista după ștergere
+    } catch (err) {
+      console.error("Eroare la ștergere:", err);
+    }
   };
 
   return (
@@ -37,15 +55,14 @@ const DiaryPage = () => {
             selectedDate={selectedDate}
             onDateChange={setSelectedDate}
           />
-          <DiaryAddProductForm onAdd={handleAddProduct} />
-          <DiaryProductsList
-            items={filteredProducts}
-            onDelete={handleDeleteProduct}
+          <DiaryAddProductForm
+            onAdd={handleAddProduct}
+            selectedDate={selectedDate}
           />
+          <DiaryProductsList items={products} onDelete={handleDeleteProduct} />
         </div>
-
         <div>
-          <RightSidebar />
+          <RightSidebar products={products} />
         </div>
       </div>
     </div>

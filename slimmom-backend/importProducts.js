@@ -3,7 +3,9 @@ const fs = require("fs");
 const path = require("path");
 
 mongoose
-  .connect("mongodb://127.0.0.1:27017/slimmom")
+  .connect(
+    "mongodb+srv://abiatarcosma:slimmom1243-1243@slimmom.ikczot1.mongodb.net/slimmom?retryWrites=true&w=majority"
+  )
   .then(() => console.log("✅ Connected to MongoDB"))
   .catch((err) => console.error("❌ DB error:", err));
 

@@ -1,30 +1,43 @@
 import { useState } from "react";
-import { searchProducts } from "../../api/productsApi";
-import { addDiaryProduct } from "../../api/productsApi";
+import { searchProducts, addDiaryProduct } from "../../api/productsApi";
 
-const DiaryAddProductForm = ({ onAdd, userBloodType = 1 }) => {
+const DiaryAddProductForm = ({ onAdd, selectedDate, userBloodType = 1 }) => {
   const [query, setQuery] = useState("");
   const [suggestions, setSuggestions] = useState([]);
-  const [productName, setProductName] = useState("");
   const [weight, setWeight] = useState("");
+  const [selectedProduct, setSelectedProduct] = useState(null);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!productName.trim() || !weight) return;
+    if (!query.trim() || !weight || !selectedProduct) return;
+
+    const isNotAllowed =
+      selectedProduct.groupBloodNotAllowed?.[userBloodType] === true;
+    const userId = localStorage.getItem("userId");
+
+    if (!userId) {
+      console.error("❌ userId lipsă în localStorage");
+      return;
+    }
 
     const newProduct = {
-      name: productName,
+      name: selectedProduct.title,
+      calories: selectedProduct.calories,
+      groupBloodNotAllowed: selectedProduct.groupBloodNotAllowed,
+      notAllowed: isNotAllowed,
       weight: Number(weight),
-      date: new Date().toISOString().split("T")[0],
+      date: selectedDate.toISOString().split("T")[0],
+      userId: localStorage.getItem("userId"),
     };
 
     try {
       const saved = await addDiaryProduct(newProduct);
       onAdd(saved);
-      setProductName("");
       setQuery("");
+      setSuggestions([]);
       setWeight("");
+      setSelectedProduct(null);
     } catch (err) {
       console.error("Eroare la salvare:", err);
     }
@@ -43,7 +56,7 @@ const DiaryAddProductForm = ({ onAdd, userBloodType = 1 }) => {
       const results = await searchProducts(value);
       const filtered = results.filter((item) => {
         const group = item.groupBloodNotAllowed;
-        return !group || !group[userBloodType];
+        return !group || !group[userBloodType]; // filtrare produse permise
       });
       setSuggestions(filtered);
     } catch (err) {
@@ -71,8 +84,8 @@ const DiaryAddProductForm = ({ onAdd, userBloodType = 1 }) => {
                 key={item._id}
                 className="p-2 hover:bg-green-100 cursor-pointer"
                 onClick={() => {
-                  setProductName(item.title);
                   setQuery(item.title);
+                  setSelectedProduct(item);
                   setSuggestions([]);
                 }}
               >
