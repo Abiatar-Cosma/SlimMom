@@ -1,16 +1,12 @@
 import { useEffect } from "react";
 import { createPortal } from "react-dom";
-
 import { useSelector } from "react-redux";
-// import { getLoadingStatus } from 'redux/auth/auth-selector';
-// import { Loader } from 'components';
-
+import { getLoadingStatus } from "../../redux/auth/auth-selector";
 import PropTypes from "prop-types";
 
-import closeIcon from "../../assets/icons/modal-close.svg";
 import s from "../Modal/Modal.module.css";
 
-const modalRoot = document.querySelector("#modal-root");
+const modalRoot = document.getElementById("modal-root");
 
 export default function Modal({ onClose, component }) {
   const isLoading = useSelector(getLoadingStatus);
@@ -23,7 +19,6 @@ export default function Modal({ onClose, component }) {
     };
 
     window.addEventListener("keydown", handleKeyDown);
-
     return () => {
       window.removeEventListener("keydown", handleKeyDown);
     };
@@ -35,15 +30,17 @@ export default function Modal({ onClose, component }) {
     }
   };
 
+  if (!modalRoot) return null;
+
   return createPortal(
     <div onClick={onBackdropClose} className={s.overlay}>
       <div className={s.modal}>
         <button type="button" onClick={onClose} className={s.button}>
-          <svg className={s.icon} width={12} height={12}>
-            <use href={closeIcon + "#close-modal-cross"}></use>
+          <svg className={s.icon} width={12} height={12} viewBox="0 0 32 32">
+            <path d="M4 4 L28 28 M28 4 L4 28" stroke="black" strokeWidth="4" />
           </svg>
         </button>
-        {isLoading ? <Loader /> : component}
+        {/* {isLoading ? <p>Loading...</p> : component} */}
       </div>
     </div>,
     modalRoot

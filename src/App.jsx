@@ -1,21 +1,10 @@
-import React from "react";
-import Background from "./components/Background/Background";
-import { useSelector } from "react-redux";
-import Loader from "./components/Loader/Loader";
-import Header from "./components/Header/Header";
 import { BrowserRouter } from "react-router-dom";
-import AppRouter from "./router/AppRouter";
+import AppContent from "./AppContent";
 
 const App = () => {
-  const isLoading = useSelector((state) => state.ui.isLoading);
-
   return (
     <BrowserRouter>
-      <Background>
-        {isLoading && <Loader />}
-        <Header />
-        <AppRouter />
-      </Background>
+      <AppContent />
     </BrowserRouter>
   );
 };
