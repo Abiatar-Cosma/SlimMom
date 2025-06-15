@@ -20,15 +20,19 @@
   font-weight: 700;
   line-height: 0.95;
   padding: 15px 18px 15px 0;
-  color: var(--main-color);
+  color: white;
 }
 .link:hover {
   color: var(--second-color);
 }
-/* .activeLink {
-  composes: link;
-  color: var(--second-color);
-} */
+.activeLink {
+  display: inline-block;
+  text-decoration: none;
+  font-weight: 700;
+  line-height: 0.95;
+  padding: 15px 18px 15px 0;
+  color: #9b9faa;
+}
 
 .nav {
   padding-top: 60px;

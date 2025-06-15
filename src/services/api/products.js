@@ -12,8 +12,12 @@ export const getProductsByQuery = async (query) => {
   return data;
 };
 
-export const getDailyMeals = async (date) => {
-  const { data } = await instance.post("/dailynutritions/getdailymeals", date);
+// corect: date trebuie să fie obiect cu proprietatea `date`
+export const getDailyMeals = async (payload) => {
+  const { data } = await instance.post(
+    "/dailynutritions/getdailymeals",
+    payload
+  );
   return data;
 };
 

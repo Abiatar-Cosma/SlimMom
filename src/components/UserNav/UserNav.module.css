@@ -11,7 +11,7 @@
   color: var(--second-color);
 }
 .link:hover {
-  color: var(--main-color);
+  color: smoke
 }
 .activeLink {
   color: var(--main-color);
