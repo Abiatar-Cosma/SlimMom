@@ -1,24 +1,24 @@
 import { NavLink } from "react-router-dom";
 
 import { useDispatch, useSelector } from "react-redux";
-// import { getDailyIntake, getUserDailyDiet, getLoginStatus } from 'redux/auth/auth-selector';
-// import { updateModalStatus } from 'redux/auth/auth-slice';
+import { getDailyIntake, getUserDailyDiet, getLoginStatus } from '../../redux/auth/auth-selector';
+import { updateModalStatus } from '../../redux/auth/auth-slice';
 import { nanoid } from "@reduxjs/toolkit";
 import s from "../DailyCalorieIntake/DailyCalorieIntake.module.css";
 
 export default function DailyCalorieIntake() {
-//   const dispatch = useDispatch();
+  const dispatch = useDispatch();
 
-//   const isLoggedIn = useSelector(getLoginStatus);
-//   const navigateTo = isLoggedIn ? "/diary" : "/registration";
-//   const getDiet = isLoggedIn ? getUserDailyDiet : getDailyIntake;
-//   const dailyDiet = useSelector(getDiet);
+  const isLoggedIn = useSelector(getLoginStatus);
+  const navigateTo = isLoggedIn ? "/diary" : "/registration";
+  const getDiet = isLoggedIn ? getUserDailyDiet : getDailyIntake;
+  const dailyDiet = useSelector(getDiet);
 
-//   const productsNotAllowed = dailyDiet?.notAllowedProduct?.map((el) => (
-//     <li key={nanoid()} className={s.item}>
-//       <p className={s.text}>{el.title}</p>
-//     </li>
-//   ));
+  const productsNotAllowed = dailyDiet?.notAllowedProduct?.map((el) => (
+    <li key={nanoid()} className={s.item}>
+      <p className={s.text}>{el.title}</p>
+    </li>
+  ));
 
   return (
     <>

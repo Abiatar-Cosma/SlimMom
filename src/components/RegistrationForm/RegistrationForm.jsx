@@ -1,11 +1,9 @@
-// import GoogleLogo from "../../assets/icons/googleLogo.svg";
-// import FacebookText from "../../assets/icons/facebookText.svg";
-import eyeOpened from "../../assets/icons/eye.svg";
-import eyeClosed from "../../assets/icons/eye-blocked.svg";
+import eyeOpened from "../../assets/icons/eye.svg?url";
+import eyeClosed from "../../assets/icons/eye-blocked.svg?url";
 import Button from "../Button/Button";
 import s from "./RegistrationForm.module.css";
 import { useDispatch } from "react-redux";
-import { Formik, Form, Field } from "formik";
+import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
 import { useState } from "react";
 import { handleRegistration } from "../../redux/auth/auth-operations";
@@ -22,134 +20,108 @@ const SignupSchema = Yup.object().shape({
 
 const RegistrationForm = () => {
   const [isPswdShown, setIsPswdShown] = useState(false);
-  const dispatch = useDispatch();
   const [errorMessage, setErrorMessage] = useState("");
+  const dispatch = useDispatch();
 
   return (
-    <>
-      <Formik
-        initialValues={{
-          name: "",
-          email: "",
-          password: "",
-        }}
-        validationSchema={SignupSchema}
-        onSubmit={(values, actions) => {
-          dispatch(handleRegistration(values)).then((a) => {
-            if (a?.type === "users/signup/rejected") {
-              setErrorMessage(a?.payload);
-            }
-            console.log(errorMessage);
-          });
+    <Formik
+      initialValues={{
+        name: "",
+        email: "",
+        password: "",
+      }}
+      validationSchema={SignupSchema}
+      onSubmit={async (values, actions) => {
+        const result = await dispatch(handleRegistration(values));
+        if (result.type === "users/signup/rejected") {
+          setErrorMessage(result.payload);
+        } else {
+          setErrorMessage("");
           actions.resetForm();
-        }}
-      >
-        {({ handleSubmit, errors, touched }) => (
-          <Form className={s.loginForm}>
-            <Field
-              className={s.formInput}
-              type="name"
-              name="name"
-              title="Please enter your name or nickname'"
-              placeholder="Name *"
-              min-length="2"
-              required
-              id="name"
-            />
-            {errors.name && touched.name ? (
-              <div className={s.errorMessage}>* {errors.name}</div>
-            ) : null}
-            {(errorMessage !== '"email" must be a valid email' ||
-              errorMessage !== "Email in use") &&
-            !touched.name ? (
-              <div className={s.errorMessage}>{errorMessage}</div>
-            ) : null}
+        }
+      }}
+    >
+      {({ errors, touched }) => (
+        <Form className={s.loginForm} noValidate>
+          <Field
+            className={s.formInput}
+            type="text"
+            name="name"
+            placeholder="Name *"
+            autoComplete="name"
+            id="name"
+          />
+          <ErrorMessage
+            name="name"
+            component="div"
+            className={s.errorMessage}
+          />
+          {/* Show API error message related to name only if no validation error */}
+          {!errors.name && errorMessage && (
+            <div className={s.errorMessage}>{errorMessage}</div>
+          )}
 
-            <Field
-              className={s.formInput}
-              type="email"
-              name="email"
-              title="Please enter valid email address, for example  'example@gmail.com'"
-              placeholder="Email *"
-              min-length="6"
-              required
-              id="email"
-            />
-            {errors.email && touched.email ? (
-              <div className={s.errorMessage}>* {errors.email}</div>
-            ) : null}
-            {(errorMessage === '"email" must be a valid email' ||
-              errorMessage === "Email in use") &&
-            !touched.email ? (
-              <div className={s.errorMessage}>{errorMessage}</div>
-            ) : null}
+          <Field
+            className={s.formInput}
+            type="email"
+            name="email"
+            placeholder="Email *"
+            autoComplete="email"
+            id="email"
+          />
+          <ErrorMessage
+            name="email"
+            component="div"
+            className={s.errorMessage}
+          />
+          {/* Show API error message related to email only if no validation error */}
+          {!errors.email && errorMessage && (
+            <div className={s.errorMessage}>{errorMessage}</div>
+          )}
 
+          <div className={s.passwordWrapper}>
             <Field
-              className={s.formInput + " " + s.passInput}
+              className={`${s.formInput} ${s.passInput}`}
               type={isPswdShown ? "text" : "password"}
               name="password"
-              title="Please enter your password. Minimum length 8 symbols"
               placeholder="Password *"
-              min-length="8"
-              required
+              autoComplete="new-password"
               id="password"
             />
             <button
               className={s.pswdVisBtn}
-              onClick={() => {
-                setIsPswdShown(!isPswdShown);
-              }}
               type="button"
+              onClick={() => setIsPswdShown(!isPswdShown)}
+              aria-label={isPswdShown ? "Hide password" : "Show password"}
             >
               <img
                 className={s.pswdBtnImg}
                 src={isPswdShown ? eyeOpened : eyeClosed}
-                alt="Button show/hide password"
+                alt="Toggle password visibility"
               />
             </button>
-            {errors.password && touched.password ? (
-              <div className={s.errorMessage}>* {errors.password}</div>
-            ) : null}
-            {errorMessage &&
-            errorMessage === "Password is wrong" &&
-            !touched.password ? (
-              <div className={s.errorMessage}>{errorMessage}</div>
-            ) : null}
+          </div>
+          <ErrorMessage
+            name="password"
+            component="div"
+            className={s.errorMessage}
+          />
+          {/* Show API error message related to password only if no validation error */}
+          {!errors.password && errorMessage && (
+            <div className={s.errorMessage}>{errorMessage}</div>
+          )}
 
-            <div className={s.btnCont}>
-              <Button
-                isPrimaryButton={false}
-                text={"Register"}
-                width={182}
-                onClick={() => {
-                  handleSubmit();
-                }}
-              />
-              {/* <a
-                className={s.googleBtn}
-                href={`${REACT_APP_BACKEND_URL}/users/google`}
-              >
-                <img
-                  className={s.googleLogo}
-                  src={GoogleLogo}
-                  alt="Google logo"
-                />
-              </a>
-              <a
-                className={s.googleBtn}
-                href={`${REACT_APP_BACKEND_URL}/users/facebook`}
-              >
-                <img
-                  className={s.googleLogo}
-                  src={FacebookText}
-                  alt="Facebook logo"
-                />
-              </a> */}
-            </div>
-          </Form>
-        )}
-      </Formik>
-    </>
+          <div className={s.btnCont}>
+            <Button
+              isPrimaryButton={false}
+              text={"Register"}
+              width={182}
+              type="submit"
+            />
+          </div>
+        </Form>
+      )}
+    </Formik>
   );
 };
 

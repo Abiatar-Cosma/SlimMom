@@ -1,9 +1,4 @@
 import axios from "axios";
-
-// const { REACT_APP_BACKEND_URL = 'http://localhost:3000/api' } = process.env;
-// const instance = axios.create({
-//   baseURL: REACT_APP_BACKEND_URL,
-// });
 const { VITE_BACKEND_URL } = import.meta.env;
 
 const instance = axios.create({

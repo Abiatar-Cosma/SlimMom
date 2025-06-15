@@ -40,7 +40,13 @@ export default function Modal({ onClose, component }) {
             <path d="M4 4 L28 28 M28 4 L4 28" stroke="black" strokeWidth="4" />
           </svg>
         </button>
-        {/* {isLoading ? <p>Loading...</p> : component} */}
+        {isLoading ? (
+          <div className={s.loading}>
+            <p>Loading...</p>
+          </div>
+        ) : (
+          component
+        )}
       </div>
     </div>,
     modalRoot

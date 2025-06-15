@@ -11,7 +11,7 @@ export const handleRegistration = createAsyncThunk(
       return result;
     } catch (error) {
       toast.error(`Sorry, registration failed. Try again.`);
-      return rejectWithValue(error.response.data.message || error.message);
+      return rejectWithValue(error.response?.data?.message || error.message);
     }
   }
 );
@@ -27,7 +27,7 @@ export const handleLogin = createAsyncThunk(
         error?.response?.data?.message ||
           "Sorry, login failed. Check email and password. Try again."
       );
-      return rejectWithValue(error.response.data.message || error.message);
+      return rejectWithValue(error.response?.data?.message || error.message);
     }
   }
 );
@@ -40,19 +40,19 @@ export const refreshUserToken = createAsyncThunk(
       return result;
     } catch (error) {
       toast.error(`Sorry, refresh failed.`);
-      return rejectWithValue(error.response.data.message || error.message);
+      return rejectWithValue(error.response?.data?.message || error.message);
     }
   }
 );
 
 export const handleLogout = createAsyncThunk(
   "users/logout",
-  async (data, { rejectWithValue }) => {
+  async (_, { rejectWithValue }) => {
     try {
-      const result = await api.logout(data);
+      const result = await api.logout();
       return result;
     } catch (error) {
-      toast.error(`Sorry, registration failed. Try again.`);
+      toast.error(`Sorry, logout failed. Try again.`);
       return rejectWithValue(error.message);
     }
   }
@@ -60,22 +60,18 @@ export const handleLogout = createAsyncThunk(
 
 export const getCurrentUser = createAsyncThunk(
   "users/current",
-  async (_, { rejectWithValue }) => {
+  async (_, { rejectWithValue, getState }) => {
     try {
+      const state = getState();
+      if (!state.auth.accessToken) {
+        return rejectWithValue("No access token");
+      }
+      api.setToken(state.auth.accessToken);
       const result = await api.getCurrentUser();
       return result;
     } catch (error) {
       return rejectWithValue(error.message);
     }
-  },
-  {
-    condition: (_, thunkAPI) => {
-      const state = thunkAPI.getState();
-      if (!state.auth.accessToken) {
-        return false;
-      }
-      api.setToken(state.auth.accessToken);
-    },
   }
 );
 
@@ -88,7 +84,7 @@ export const getCalorieIntake = createAsyncThunk(
     } catch (error) {
       toast.error(`Sorry, request failed.`);
       return thunkAPI.rejectWithValue(
-        error.response.data.message || error.message
+        error.response?.data?.message || error.message
       );
     }
   }
@@ -103,48 +99,8 @@ export const getCalorieIntakeForUser = createAsyncThunk(
     } catch (error) {
       toast.error(`Sorry, request failed.`);
       return thunkAPI.rejectWithValue(
-        error.response.data.message || error.message
+        error.response?.data?.message || error.message
       );
-    }
-  }
-);
-
-export const saveNewPassword = createAsyncThunk(
-  "users/password",
-  async (data, { rejectWithValue }) => {
-    try {
-      const result = await api.saveNewPassword(data);
-      toast.success("New password saved in database");
-      return result;
-    } catch (error) {
-      toast.error(`Request failed. Password didn't save. Try again.`);
-      return rejectWithValue(error.message);
-    }
-  }
-);
-
-export const getKeyVerify = createAsyncThunk(
-  "users/key",
-  async (data, { rejectWithValue }) => {
-    try {
-      const result = await api.getKeyVerify(data);
-      return result;
-    } catch (error) {
-      toast.error(`Key is wrong.`);
-      return rejectWithValue(error.message);
-    }
-  }
-);
-
-export const getActivationKey = createAsyncThunk(
-  "users/email",
-  async (data, { rejectWithValue }) => {
-    try {
-      const result = await api.getActivationKey(data);
-      return result;
-    } catch (error) {
-      toast.error(`Can't find email`);
-      return rejectWithValue(error.message);
     }
   }
 );

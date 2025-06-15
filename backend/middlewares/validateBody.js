@@ -1,9 +1,15 @@
-export const validateBody = (schema) => {
-  return (req, res, next) => {
+import { RequestError } from "../helpers/index.js";
+
+const validateBody = (schema) => {
+  const func = (req, res, next) => {
     const { error } = schema.validate(req.body);
     if (error) {
-      return res.status(400).json({ message: error.details[0].message });
+      return next(RequestError(400, error.message));
     }
     next();
   };
+
+  return func;
 };
+
+export default validateBody;

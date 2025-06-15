@@ -2,20 +2,29 @@ import mongoose from "mongoose";
 import dotenv from "dotenv";
 import fs from "fs";
 import path from "path";
-import Product from "../models/Product.js";
+import { fileURLToPath } from "url";
 
+// 🛠️ Setup pentru ESM (__dirname)
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+// 🔧 Încarcă variabilele din .env
 dotenv.config();
-const __dirname = path.resolve();
+
+// 📦 Import modelul Product
+import { Product } from "../models/product.js"; // asigură-te că modelul e ESM și exportă `Product`
 
 const importProducts = async () => {
   try {
-    await mongoose.connect(process.env.MONGO_URI);
+    await mongoose.connect(process.env.DB_HOST);
+    console.log("🛜 Conectat la MongoDB");
 
-    const filePath = path.join(__dirname, "scripts", "products.json");
+    // 🗂️ Citește fișierul cu produse
+    const filePath = path.join(__dirname, "products.json");
     const data = JSON.parse(fs.readFileSync(filePath, "utf-8"));
     const total = data.length;
 
-    // ✅ Filtrăm doar produsele complete și corecte
+    // ✅ Validează structura datelor
     const validData = data.filter(
       (item) =>
         item.categories &&
@@ -34,26 +43,22 @@ const importProducts = async () => {
         !Array.isArray(item.groupBloodNotAllowed)
     );
 
-    const invalidCount = total - validData.length;
+    console.log(`📦 Total produse: ${total}`);
+    console.log(`✅ Valide: ${validData.length}`);
+    console.log(`⚠️ Invalide: ${invalidData.length}`);
 
-    console.log(`📦 Total produse în fișier: ${total}`);
-    console.log(`✅ Produse valide: ${validData.length}`);
-    console.log(`⚠️ Produse invalide: ${invalidCount}`);
-
-    // 🧹 Ștergem vechile produse
+    // 🧹 Șterge produsele existente și adaugă doar cele valide
     await Product.deleteMany();
-
-    // 🧾 Inserăm doar ce e valid
     await Product.insertMany(validData);
+    console.log("🚀 Import complet cu succes");
 
-    // 💾 (Opțional) salvăm produsele invalide
-    const invalidPath = path.join(__dirname, "scripts", "invalidProducts.json");
+    // 💾 Scrie produsele invalide într-un fișier separat (opțional)
+    const invalidPath = path.join(__dirname, "invalidProducts.json");
     fs.writeFileSync(invalidPath, JSON.stringify(invalidData, null, 2));
 
-    console.log("✅ Produsele au fost importate cu succes!");
-    process.exit();
-  } catch (error) {
-    console.error("❌ Eroare la import:", error.message);
+    process.exit(0);
+  } catch (err) {
+    console.error("❌ Eroare:", err.message);
     process.exit(1);
   }
 };

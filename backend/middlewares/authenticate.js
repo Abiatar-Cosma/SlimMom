@@ -1,25 +1,34 @@
 import jwt from "jsonwebtoken";
-import { User } from "../models/User.js";
+import { User } from "../models/user.js";
+import { RequestError } from "../helpers/index.js";
 
-export const authenticate = async (req, res, next) => {
+const { ACCESS_TOKEN_SECRET_KEY } = process.env;
+
+const authenticate = async (req, res, next) => {
   try {
-    const authHeader = req.headers.authorization;
+    const { authorization = "" } = req.headers;
+    const [bearer, token] = authorization.split(" ");
 
-    if (!authHeader || !authHeader.startsWith("Bearer ")) {
-      return res.status(401).json({ message: "Acces neautorizat" });
+    if (bearer !== "Bearer") {
+      throw RequestError(401);
     }
 
-    const token = authHeader.split(" ")[1];
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const { id } = jwt.verify(token, ACCESS_TOKEN_SECRET_KEY);
+    const user = await User.findById(id);
 
-    const user = await User.findById(decoded.id);
-    if (!user) {
-      return res.status(401).json({ message: "Token invalid" });
+    if (!user || !user.accessToken || user.accessToken !== token) {
+      throw RequestError(401);
     }
 
-    req.user = { id: user._id };
+    req.user = user;
     next();
   } catch (error) {
-    res.status(401).json({ message: "Token invalid sau expirat" });
+    if (!error.status) {
+      error.status = 401;
+      error.message = "Not authorized";
+    }
+    next(error);
   }
 };
+
+export default authenticate;

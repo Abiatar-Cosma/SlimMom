@@ -1,9 +1,12 @@
 import mongoose from "mongoose";
+import handleSaveErrors from "../helpers/handleSaveErrors.js";
 
-const productSchema = new mongoose.Schema(
+const { Schema, model } = mongoose;
+
+const productSchema = new Schema(
   {
     categories: {
-      type: String,
+      type: Array,
       required: true,
     },
     weight: {
@@ -11,7 +14,7 @@ const productSchema = new mongoose.Schema(
       required: true,
     },
     title: {
-      type: String,
+      type: Object,
       required: true,
     },
     calories: {
@@ -19,12 +22,13 @@ const productSchema = new mongoose.Schema(
       required: true,
     },
     groupBloodNotAllowed: {
-      type: [mongoose.Schema.Types.Mixed], // poate fi boolean/null
+      type: Array,
       required: true,
     },
   },
   { versionKey: false }
 );
 
-const Product = mongoose.model("Product", productSchema);
-export default Product;
+productSchema.post("save", handleSaveErrors);
+
+export const Product = model("product", productSchema);

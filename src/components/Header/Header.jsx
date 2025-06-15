@@ -1,13 +1,13 @@
 import s from "./Header.module.css";
 import UserNav from "../UserNav/UserNav";
-// import { AdditionalHeaderField, UserInfo } from 'components';
+import UserInfo from "../UserInfo/UserInfo";
 import Logo from "../Logo/Logo";
-import burgerIcon from "../../assets/icons/burger.svg";
-import closeIcon from "../../assets/icons/close.svg";
+import burgerIcon from "../../assets/icons/burger.svg?url";
+import closeIcon from "../../assets/icons/close.svg?url";
 import { disableBodyScroll, enableBodyScroll } from "body-scroll-lock";
 import { useEffect } from "react";
 import { useSelector } from "react-redux";
-import useWindowDimensions from "../../services/useWindowDimensions";
+import useWindowDimensions from "../../services/hooks/useWindowDimensions";
 import { getLoginStatus, getModalStatus } from "../../redux/auth/auth-selector";
 
 const Header = ({ menuActive, setMenuActive }) => {
