@@ -6,20 +6,23 @@ const { ACCESS_TOKEN_SECRET_KEY } = process.env;
 
 const authenticate = async (req, res, next) => {
   try {
-    const { authorization = "" } = req.headers;
-    const [bearer, token] = authorization.split(" ");
+    // 🔐 Ia accessToken din cookie
+    const token = req.cookies.accessToken;
 
-    if (bearer !== "Bearer") {
-      throw RequestError(401);
+    if (!token) {
+      throw RequestError(401, "Access token missing");
     }
 
+    // ✅ Verifică semnătura JWT
     const { id } = jwt.verify(token, ACCESS_TOKEN_SECRET_KEY);
-    const user = await User.findById(id);
 
-    if (!user || !user.accessToken || user.accessToken !== token) {
-      throw RequestError(401);
+    // 🔍 Găsește utilizatorul
+    const user = await User.findById(id);
+    if (!user) {
+      throw RequestError(401, "User not found");
     }
 
+    // 👤 Atașează userul la request
     req.user = user;
     next();
   } catch (error) {

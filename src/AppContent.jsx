@@ -6,30 +6,19 @@ import Header from "./components/Header/Header";
 import AppRouter from "./router/AppRouter";
 import { useDispatch, useSelector } from "react-redux";
 import { getCurrentUser } from "./redux/auth/auth-operations";
-import {
-  getAccessToken,
-  getLoginStatus,
-  getModalStatus,
-} from "./redux/auth/auth-selector";
-import { useSearchParams } from "react-router-dom";
-import { setAccessToken, setRefreshToken } from "./redux/auth/auth-slice";
+import { getLoginStatus, getModalStatus } from "./redux/auth/auth-selector";
 import { disableBodyScroll, enableBodyScroll } from "body-scroll-lock";
-import { setToken } from "./services/api/auth";
 
 const AppContent = () => {
-  const isLoading = useSelector((state) => state.ui.isLoading);
+  const isLoadingUI = useSelector((state) => state.ui.isLoading);
   const showModal = useSelector(getModalStatus);
   const isLogin = useSelector(getLoginStatus);
-  const accessToken = useSelector(getAccessToken);
   const dispatch = useDispatch();
 
   const [menuActive, setMenuActive] = useState(false);
   const toggleNavMenu = () => setMenuActive(!menuActive);
 
-  const [searchParams] = useSearchParams();
-  const accessTokenFromURL = searchParams.get("accessToken");
-  const refreshTokenFromURL = searchParams.get("refreshToken");
-
+  // 🔒 Blochează scroll-ul când este activ un modal
   useEffect(() => {
     const body = document.querySelector("#root");
     if (showModal) {
@@ -39,24 +28,14 @@ const AppContent = () => {
     }
   }, [showModal]);
 
+  // ✅ Apelează o singură dată la mount pentru a verifica userul
   useEffect(() => {
-    if (accessTokenFromURL && refreshTokenFromURL) {
-      dispatch(setAccessToken(accessTokenFromURL));
-      dispatch(setRefreshToken(refreshTokenFromURL));
-      setToken(accessTokenFromURL); // <<< setează tokenul în axios
-    }
-  }, [accessTokenFromURL, refreshTokenFromURL, dispatch]);
-
-  useEffect(() => {
-    if (accessToken) {
-      setToken(accessToken);
-      dispatch(getCurrentUser());
-    }
-  }, [accessToken, dispatch]);
+    dispatch(getCurrentUser());
+  }, [dispatch]);
 
   return (
     <Background>
-      {isLoading && <Loader />}
+      {isLoadingUI && <Loader />}
       <Header menuActive={menuActive} setMenuActive={setMenuActive} />
       {menuActive && <BurgerMenu toggleNavMenu={toggleNavMenu} />}
       <AppRouter />

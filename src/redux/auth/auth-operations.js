@@ -34,12 +34,11 @@ export const handleLogin = createAsyncThunk(
 
 export const refreshUserToken = createAsyncThunk(
   "users/refresh",
-  async (data, { rejectWithValue }) => {
+  async (_, { rejectWithValue }) => {
     try {
-      const result = await api.refresh(data);
+      const result = await api.refresh(); // 🔥 fără data
       return result;
     } catch (error) {
-      toast.error(`Sorry, refresh failed.`);
       return rejectWithValue(error.response?.data?.message || error.message);
     }
   }
@@ -60,17 +59,12 @@ export const handleLogout = createAsyncThunk(
 
 export const getCurrentUser = createAsyncThunk(
   "users/current",
-  async (_, { rejectWithValue, getState }) => {
+  async (_, { rejectWithValue }) => {
     try {
-      const state = getState();
-      if (!state.auth.accessToken) {
-        return rejectWithValue("No access token");
-      }
-      api.setToken(state.auth.accessToken);
       const result = await api.getCurrentUser();
       return result;
     } catch (error) {
-      return rejectWithValue(error.message);
+      return rejectWithValue(error.response?.data?.message || error.message);
     }
   }
 );

@@ -1,15 +1,20 @@
 import { RequestError } from "../helpers/index.js";
 
 const validateBody = (schema) => {
-  const func = (req, res, next) => {
-    const { error } = schema.validate(req.body);
+  return (req, res, next) => {
+    const { error, value } = schema.validate(req.body, {
+      abortEarly: false, // ✅ colectează toate erorile
+      stripUnknown: true, // ✅ elimină câmpurile care nu există în schema Joi
+    });
+
     if (error) {
-      return next(RequestError(400, error.message));
+      const message = error.details.map((err) => err.message).join(", ");
+      return next(RequestError(400, message));
     }
+
+    req.body = value; // ✅ salvăm doar datele validate/curate
     next();
   };
-
-  return func;
 };
 
 export default validateBody;

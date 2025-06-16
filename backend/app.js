@@ -2,11 +2,11 @@ import express from "express";
 import logger from "morgan";
 import cors from "cors";
 import dotenv from "dotenv";
+import cookieParser from "cookie-parser";
 
 import authRouter from "./routes/api/auth.js";
 import productsRouter from "./routes/api/products.js";
 import dailyNutritionsRouter from "./routes/api/dailyNutritions.js";
-
 import dailyIntakeRouter from "./routes/api/dailyIntakeRoutes.js";
 
 dotenv.config();
@@ -15,7 +15,15 @@ const app = express();
 const formatsLogger = app.get("env") === "development" ? "dev" : "short";
 
 app.use(logger(formatsLogger));
-app.use(cors());
+app.use(cookieParser());
+
+app.use(
+  cors({
+    origin: "http://localhost:5173", // 🟢 înlocuiește cu frontendul real în producție
+    credentials: true, // 🔥 permite cookie-uri cross-origin
+  })
+);
+
 app.use(express.json());
 
 app.use("/api/users", authRouter);

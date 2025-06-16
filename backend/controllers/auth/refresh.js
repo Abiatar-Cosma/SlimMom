@@ -6,21 +6,46 @@ const { REFRESH_TOKEN_SECRET_KEY } = process.env;
 
 const refresh = async (req, res) => {
   try {
-    const { refreshToken: token } = req.body;
+    const token = req.cookies.refreshToken;
 
-    const { id } = jwt.verify(token, REFRESH_TOKEN_SECRET_KEY);
-
-    const user = await User.findById(id);
-    if (!user || user.refreshToken !== token) {
-      throw RequestError(401, "Invalid refresh token");
+    if (!token) {
+      throw RequestError(401, "Missing refresh token");
     }
 
-    const { accessToken, refreshToken } = await createTokens(id);
+    let payload;
+    try {
+      payload = jwt.verify(token, REFRESH_TOKEN_SECRET_KEY);
+    } catch (err) {
+      throw RequestError(401, "Invalid or expired refresh token");
+    }
 
-    res.json({
+    const user = await User.findById(payload.id);
+    if (!user || user.refreshToken !== token) {
+      throw RequestError(401, "Refresh token mismatch or user not found");
+    }
+
+    const { accessToken, refreshToken } = await createTokens(user._id);
+
+    await User.findByIdAndUpdate(user._id, {
       accessToken,
       refreshToken,
     });
+
+    res
+      .cookie("accessToken", accessToken, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "Strict", // poți schimba în "Lax" dacă ai frontend pe alt domeniu
+        maxAge: 15 * 60 * 1000,
+      })
+      .cookie("refreshToken", refreshToken, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "Strict",
+        maxAge: 7 * 24 * 60 * 60 * 1000,
+      })
+      .status(200)
+      .json({ message: "Token refreshed" });
   } catch (error) {
     console.error("Refresh error:", error.message);
     if (!error.status) {

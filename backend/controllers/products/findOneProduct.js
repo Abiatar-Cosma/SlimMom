@@ -1,11 +1,12 @@
 import { Product } from "../../models/index.js";
-import { RequestError } from "../../helpers/index.js";
 
 const findProductsByQuery = async (req, res) => {
   const { q } = req.query;
 
   if (!q) {
-    return res.status(400).json({ message: "Query parameter 'q' is required" });
+    return res
+      .status(400)
+      .json({ message: "Query parameter 'q' is required" });
   }
 
   const result = await Product.find(
@@ -13,11 +14,14 @@ const findProductsByQuery = async (req, res) => {
     { title: 1, weight: 1, calories: 1 }
   ).limit(20);
 
-  if (result.length < 1) {
-    throw RequestError(404, "Not found");
+  if (result.length === 0) {
+    return res.status(200).json({
+      message: "No products found for your search.",
+      products: [],
+    });
   }
 
-  res.json(result);
+  res.status(200).json({ products: result });
 };
 
 export default findProductsByQuery;

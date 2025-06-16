@@ -18,14 +18,6 @@ const userSchema = new Schema(
       required: [true, "Email is required"],
       unique: true,
     },
-    accessToken: {
-      type: String,
-      default: "",
-    },
-    refreshToken: {
-      type: String,
-      default: "",
-    },
     personalData: {
       type: Object,
       default: null,

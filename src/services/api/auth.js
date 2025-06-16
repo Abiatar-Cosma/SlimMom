@@ -1,17 +1,5 @@
-import axios from "axios";
-const { VITE_BACKEND_URL } = import.meta.env;
-
-const instance = axios.create({
-  baseURL: VITE_BACKEND_URL || "http://localhost:3000/api",
-});
-
-export const setToken = (token = "") => {
-  if (token) {
-    instance.defaults.headers.common["Authorization"] = `Bearer ${token}`;
-  } else {
-    delete instance.defaults.headers.common["Authorization"];
-  }
-};
+// src/services/api/auth.js
+import instance from "./axiosInstance";
 
 export const signup = async (data) => {
   const result = await instance.post("/users/signup", data);
@@ -20,19 +8,16 @@ export const signup = async (data) => {
 
 export const login = async (data) => {
   const result = await instance.post("/users/login", data);
-  setToken(result.data.accessToken);
   return result.data;
 };
 
-export const refresh = async (data) => {
-  const result = await instance.post("/users/refresh", data);
-  setToken(result.data.accessToken);
+export const refresh = async () => {
+  const result = await instance.post("/users/refresh"); // 🔥 fără payload
   return result.data;
 };
 
 export const logout = async () => {
   const result = await instance.get("/users/logout");
-  setToken("");
   return result.data;
 };
 
@@ -40,7 +25,6 @@ export const getCurrentUser = async () => {
   const result = await instance.get("/users/current");
   return result.data;
 };
-
 export const getActivationKey = async (email) => {
   const result = await instance.get(`/users/key/${email}`);
   return result.data;

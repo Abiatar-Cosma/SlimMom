@@ -1,8 +1,7 @@
 import { configureStore, combineReducers } from "@reduxjs/toolkit";
-
-import { persistReducer } from "redux-persist";
 import {
   persistStore,
+  persistReducer,
   FLUSH,
   REHYDRATE,
   PAUSE,
@@ -11,9 +10,11 @@ import {
   REGISTER,
 } from "redux-persist";
 import storage from "redux-persist/lib/storage";
+
 import uiReducer from "./ui/uiSlice";
 import productsReducer from "./products/products-slice";
 import authReducer from "./auth/auth-slice";
+import { setupAxiosInterceptors } from "../services/api/interceptor"; // ✅
 
 const persistAuthConfig = {
   key: "user-token",
@@ -38,5 +39,7 @@ export const store = configureStore({
       },
     }),
 });
+
+setupAxiosInterceptors(store); // ✅ atașăm interceptorul după creare
 
 export const persistor = persistStore(store);
