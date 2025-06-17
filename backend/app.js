@@ -19,8 +19,8 @@ app.use(cookieParser());
 
 app.use(
   cors({
-    origin: "http://localhost:5173", // 🟢 înlocuiește cu frontendul real în producție
-    credentials: true, // 🔥 permite cookie-uri cross-origin
+    origin: "http://localhost:5173",
+    credentials: true,
   })
 );
 
@@ -30,8 +30,7 @@ app.use("/api/users", authRouter);
 app.use("/api/products", productsRouter);
 app.use("/api/dailynutritions", dailyNutritionsRouter);
 app.use("/api/daily-intake", dailyIntakeRouter);
-// app.use("/api/developers", developersRouter);
-// app.use("/api/swagger", express.static("swagger-documentation"));
+
 app.use("/public", express.static("public"));
 
 app.use((req, res) => {

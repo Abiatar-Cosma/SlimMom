@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 import dotenv from "dotenv";
-import app from "./app.js"; // extensia .js este necesară în ESM
+import app from "./app.js"; 
 
 dotenv.config();
 

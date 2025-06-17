@@ -18,7 +18,6 @@ const AppContent = () => {
   const [menuActive, setMenuActive] = useState(false);
   const toggleNavMenu = () => setMenuActive(!menuActive);
 
-  // 🔒 Blochează scroll-ul când este activ un modal
   useEffect(() => {
     const body = document.querySelector("#root");
     if (showModal) {
@@ -28,7 +27,7 @@ const AppContent = () => {
     }
   }, [showModal]);
 
-  // ✅ Apelează o singură dată la mount pentru a verifica userul
+
   useEffect(() => {
     dispatch(getCurrentUser());
   }, [dispatch]);

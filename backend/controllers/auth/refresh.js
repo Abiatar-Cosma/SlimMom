@@ -35,7 +35,7 @@ const refresh = async (req, res) => {
       .cookie("accessToken", accessToken, {
         httpOnly: true,
         secure: process.env.NODE_ENV === "production",
-        sameSite: "Strict", // poți schimba în "Lax" dacă ai frontend pe alt domeniu
+        sameSite: "Strict",
         maxAge: 15 * 60 * 1000,
       })
       .cookie("refreshToken", refreshToken, {

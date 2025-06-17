@@ -1,4 +1,3 @@
-// src/services/api/auth.js
 import instance from "./axiosInstance";
 
 export const signup = async (data) => {
@@ -11,11 +10,6 @@ export const login = async (data) => {
   return result.data;
 };
 
-export const refresh = async () => {
-  const result = await instance.post("/users/refresh"); // 🔥 fără payload
-  return result.data;
-};
-
 export const logout = async () => {
   const result = await instance.get("/users/logout");
   return result.data;
@@ -25,6 +19,7 @@ export const getCurrentUser = async () => {
   const result = await instance.get("/users/current");
   return result.data;
 };
+
 export const getActivationKey = async (email) => {
   const result = await instance.get(`/users/key/${email}`);
   return result.data;

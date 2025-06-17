@@ -20,7 +20,7 @@ const getDailyMeals = async (req, res) => {
     date: { $gte: startOfDay, $lte: endOfDay },
   });
 
-  res.status(200).json(meals); // ✅ returnează un array, nu un obiect
+  res.status(200).json(meals);
 };
 
 export default getDailyMeals;

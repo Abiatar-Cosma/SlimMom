@@ -5,14 +5,14 @@ export const getProductsByQuery = async (query) => {
     `/products?q=${encodeURIComponent(query)}`,
     {
       headers: {
-        "Cache-Control": "no-cache", // să evităm cache
+        "Cache-Control": "no-cache",
       },
     }
   );
   return data;
 };
 
-// corect: date trebuie să fie obiect cu proprietatea `date`
+
 export const getDailyMeals = async (payload) => {
   const { data } = await instance.post(
     "/dailynutritions/getdailymeals",

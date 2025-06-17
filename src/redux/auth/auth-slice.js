@@ -70,7 +70,7 @@ const authSlice = createSlice({
       })
       .addCase(getCurrentUser.rejected, (state, { payload }) => {
         state.isLoading = false;
-        state.isLogin = false; // 👈 Adăugat!
+        state.isLogin = false;
         state.isError = payload;
       })
 

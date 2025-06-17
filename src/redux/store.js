@@ -40,6 +40,6 @@ export const store = configureStore({
     }),
 });
 
-setupAxiosInterceptors(store); // ✅ atașăm interceptorul după creare
+setupAxiosInterceptors(store); 
 
 export const persistor = persistStore(store);

@@ -5,7 +5,7 @@ const addMeal = async (req, res) => {
   const { _id: owner } = req.user;
   const { product, grams } = req.body;
 
-  // Căutăm produsul după titlu, care e string simplu
+
   const foundProduct = await Product.findOne({ title: product });
 
   if (!foundProduct || !foundProduct.calories) {

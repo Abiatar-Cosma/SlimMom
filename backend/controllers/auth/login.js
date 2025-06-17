@@ -17,25 +17,24 @@ const login = async (req, res) => {
 
   const { accessToken, refreshToken } = await createTokens(user._id);
 
-  // ✅ Salvează tokenurile și în DB (opțional, pentru invalidare ulterioară)
   await User.findByIdAndUpdate(user._id, {
     accessToken,
     refreshToken,
   });
 
-  // ✅ Trimite-le prin cookie
+
   res
     .cookie("accessToken", accessToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: "Strict",
-      maxAge: 15 * 60 * 1000, // 15 min
+      maxAge: 15 * 60 * 1000, 
     })
     .cookie("refreshToken", refreshToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: "Strict",
-      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 zile
+      maxAge: 7 * 24 * 60 * 60 * 1000,
     })
     .status(200)
     .json({

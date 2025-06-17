@@ -3,8 +3,8 @@ import { RequestError } from "../helpers/index.js";
 const validateBody = (schema) => {
   return (req, res, next) => {
     const { error, value } = schema.validate(req.body, {
-      abortEarly: false, // ✅ colectează toate erorile
-      stripUnknown: true, // ✅ elimină câmpurile care nu există în schema Joi
+      abortEarly: false,
+      stripUnknown: true, 
     });
 
     if (error) {
@@ -12,7 +12,7 @@ const validateBody = (schema) => {
       return next(RequestError(400, message));
     }
 
-    req.body = value; // ✅ salvăm doar datele validate/curate
+    req.body = value; 
     next();
   };
 };

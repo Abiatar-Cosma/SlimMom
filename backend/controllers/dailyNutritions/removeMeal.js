@@ -6,7 +6,7 @@ const removeMeal = async (req, res) => {
   const { mealId } = req.params;
   const { _id: userId } = req.user;
 
-  // 🧱 validare ID Mongo
+
   if (!mongoose.Types.ObjectId.isValid(mealId)) {
     throw RequestError(400, "Invalid meal ID");
   }

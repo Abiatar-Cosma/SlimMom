@@ -14,11 +14,11 @@ const CalculatorPage = () => {
   const navigate = useNavigate();
   const userDailyDiet = useSelector(getUserDailyDiet);
 
-  useEffect(() => {
-    if (userDailyDiet) {
-      navigate("/diary", { replace: true });
-    }
-  }, [userDailyDiet, navigate]);
+  // useEffect(() => {
+  //   if (userDailyDiet) {
+  //     navigate("/diary", { replace: true });
+  //   }
+  // }, [userDailyDiet, navigate]);
 
   return (
     <>

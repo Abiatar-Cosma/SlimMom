@@ -32,17 +32,7 @@ export const handleLogin = createAsyncThunk(
   }
 );
 
-export const refreshUserToken = createAsyncThunk(
-  "users/refresh",
-  async (_, { rejectWithValue }) => {
-    try {
-      const result = await api.refresh(); // 🔥 fără data
-      return result;
-    } catch (error) {
-      return rejectWithValue(error.response?.data?.message || error.message);
-    }
-  }
-);
+// 🔥 Eliminat refreshUserToken complet
 
 export const handleLogout = createAsyncThunk(
   "users/logout",

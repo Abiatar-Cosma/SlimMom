@@ -17,9 +17,8 @@ const SignupSchema = Yup.object().shape({
 
 const LoginForm = () => {
   const [isPswdShown, setIsPswdShown] = useState(false);
-  const dispatch = useDispatch();
-
   const [errorMessage, setErrorMessage] = useState("");
+  const dispatch = useDispatch();
 
   const changePswdVisibility = () => {
     setIsPswdShown((prev) => !prev);
@@ -33,9 +32,9 @@ const LoginForm = () => {
       }}
       validationSchema={SignupSchema}
       onSubmit={(values, actions) => {
-        dispatch(handleLogin(values)).then((a) => {
-          if (a?.type === "users/login/rejected") {
-            setErrorMessage(a?.payload);
+        dispatch(handleLogin(values)).then((result) => {
+          if (result?.type?.includes("rejected")) {
+            setErrorMessage(result?.payload || "Login failed");
           } else {
             setErrorMessage("");
           }
@@ -51,16 +50,18 @@ const LoginForm = () => {
             name="email"
             title="Please enter valid email address, for example 'example@gmail.com'"
             placeholder="Email *"
-            minLength={6}
             required
             id="email"
           />
-          {errors.email && touched.email ? (
+          {errors.email && touched.email && (
             <div className={s.errorMessage}>* {errors.email}</div>
-          ) : null}
-          {errorMessage && !touched.email && !touched.password ? (
-            <div className={s.errorMessage}>{errorMessage}</div>
-          ) : null}
+          )}
+          {errorMessage &&
+            !touched.email &&
+            !touched.password &&
+            errorMessage !== "Password is wrong" && (
+              <div className={s.errorMessage}>{errorMessage}</div>
+            )}
 
           <Field
             className={`${s.formInput} ${s.passInput}`}
@@ -68,7 +69,6 @@ const LoginForm = () => {
             name="password"
             title="Please enter your password. Minimum length 6 symbols"
             placeholder="Password *"
-            minLength={6}
             required
             id="password"
           />
@@ -84,14 +84,12 @@ const LoginForm = () => {
               alt="Button show/hide password"
             />
           </button>
-          {errors.password && touched.password ? (
+          {errors.password && touched.password && (
             <div className={s.errorMessage}>* {errors.password}</div>
-          ) : null}
-          {errorMessage &&
-          errorMessage === "Password is wrong" &&
-          !touched.password ? (
+          )}
+          {errorMessage === "Password is wrong" && (
             <div className={s.errorMessage}>{errorMessage}</div>
-          ) : null}
+          )}
 
           <div className={s.btnCont}>
             <button type="submit" className={s.btn}>
